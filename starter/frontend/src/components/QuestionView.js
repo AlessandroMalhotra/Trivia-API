@@ -30,7 +30,7 @@ class QuestionView extends Component {
           questions: result.questions,
           totalQuestions: result.total_questions,
           categories: result.categories,
-          currentCategory: result.current_category })
+         })
         return;
       },
       error: (error) => {
@@ -127,8 +127,8 @@ class QuestionView extends Component {
           <ul>
             {Object.keys(this.state.categories).map((id, ) => (
               <li key={id} onClick={() => {this.getByCategory(id)}}>
-                {this.state.categories[id]}
-                <img className="category" src={`${this.state.categories[id]}.svg`}/>
+                {this.state.categories[id] ['type']}
+                <img className="category" src={`${this.state.categories[id] ['type']}.svg`}/>
               </li>
             ))}
           </ul>
