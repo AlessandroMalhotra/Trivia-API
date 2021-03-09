@@ -8,38 +8,71 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+def paginate_questions(request, results):
+   page = request.args.get('page', 1, type=int)
+   start = (page - 1) * QUESTIONS_PER_PAGE
+   end = start + QUESTIONS_PER_PAGE
+
+   questions = [question.format() for question in results]
+   current_question = questions[start:end]
+
+   return current_question
+
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
+  CORS(app, resources={r"/api/*":{"origins":"*"}})
+ 
+
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-control-Allow-Methods', 'GET, PUT, POST, PATCH, DELETE, OPTIONS')
+    return response
+
   
-  '''
-  @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
-  '''
+  @app.route('/categories')
+  def show_all_categories():
+    results = Category.query.order_by(Category.id).all()
+    categories = [category.format() for category in results]
 
-  '''
-  @TODO: Use the after_request decorator to set Access-Control-Allow
-  '''
-
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests 
-  for all available categories.
-  '''
-
-
+    if len(results) == 0:
+      abort(400)
+    
+    return jsonify({
+      'success': True,
+      'categories': categories
+    })
   '''
   @TODO: 
   Create an endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
   number of total questions, current category, categories. 
-
-  TEST: At this point, when you start the application
+ 
+ TEST: At this point, when you start the application
   you should see questions and categories generated,
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+
+  @app.route('/questions', methods=['GET'])
+  def show_questions():
+    results = Question.query.order_by(Question.id).all()
+    questions = paginate_questions(request, results)
+   
+    if len(questions) == 0:
+      abort(404)
+   
+    return jsonify({
+      'success': True,
+      'number of total questions': len(results),
+      'questions': questions
+    })
+  
+ 
 
   '''
   @TODO: 
