@@ -121,6 +121,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['error'], 405)
         self.assertEqual(data['message'], 'method not allowed')
+        
 
 
 # Make the tests conveniently executable

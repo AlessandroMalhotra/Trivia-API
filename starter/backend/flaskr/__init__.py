@@ -35,10 +35,12 @@ def create_app(test_config=None):
   
   @app.route('/categories')
   def show_all_categories():
-    results = Category.query.order_by(Category.id).all()
-    categories = [category.format() for category in results]
+    cat = Category.query.all()
+    categories = {}
+    for category in cat:
+      categories[category.id] = category.type
 
-    if len(results) == 0:
+    if len(cat) == 0:
       abort(400)
     
     return jsonify({
@@ -119,10 +121,6 @@ def create_app(test_config=None):
   
     finally:
       db.session.close()
-  
-  '''TEST: When you submit a question on the "Add" tab, 
-  the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab. ''' 
   
 
   '''
