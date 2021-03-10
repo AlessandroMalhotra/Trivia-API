@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
@@ -67,21 +67,10 @@ def create_app(test_config=None):
     })
   
  
-
-  '''
-  @TODO: 
-  Create an endpoint to DELETE question using a question ID.
-
-  TEST: When you click the trash icon next to a question, the question will be removed.
-  This removal will persist in the database and when you refresh the page. 
-  '''
   @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
     try:
       question = Question.query.get(question_id)
-
-      if len(question) == 0:
-        abort(404)
       
       question.delete()
       
@@ -91,8 +80,8 @@ def create_app(test_config=None):
       return jsonify({
       'success': True,
       'deleted': question_id,
-      'questions': current_question,
-      'total_questions': len(results)
+      'questions': current_questions,
+      'total_questions': len(Question.query.all())
     })
 
     except:
@@ -101,17 +90,40 @@ def create_app(test_config=None):
     finally:
       db.session.close()
 
+ 
+  @app.route('/questions', methods=['POST'])
+  def create_question():
+    req = request.get_json()
 
-  '''
-  @TODO: 
-  Create an endpoint to POST a new question, 
-  which will require the question and answer text, 
-  category, and difficulty score.
+    question = req.get('question', None)
+    answer = req.get('answer', None)
+    difficulty = req.get('difficulty', None)
+    category = req.get('category', None)
 
-  TEST: When you submit a question on the "Add" tab, 
+    try:
+      new_question = Question(question=question, answer=answer, category=category, difficulty=difficulty)
+      new_question.insert()
+
+      results = Question.query.order_by(Question.id).all()
+      questions = paginate_questions(request, results)
+
+      return jsonify({
+        'success': True,
+        'created': new_question.id,
+        'questions': questions,
+        'total_questions': len(Question.query.all())
+      })
+  
+    except:
+      abort(405)
+  
+    finally:
+      db.session.close()
+  
+  '''TEST: When you submit a question on the "Add" tab, 
   the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab.  
-  '''
+  of the questions list in the "List" tab. ''' 
+  
 
   '''
   @TODO: 
@@ -158,6 +170,22 @@ def create_app(test_config=None):
       'error': 404,
       'message': 'resource not found'
     }), 404
+
+  @app.errorhandler(422)
+  def unprocessable(error):
+    return jsonify({
+      'success': False,
+      'error': 422,
+      'message': 'unprocessable'
+    }), 422
+
+  @app.errorhandler(405)
+  def method_not_allowed(error):
+    return jsonify({
+      'success': False,
+      'error': 405,
+      'message': 'method not allowed'
+    }), 405
   
   return app
 

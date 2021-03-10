@@ -25,8 +25,11 @@ class TriviaTestCase(unittest.TestCase):
             # create all tables
             self.db.create_all()
 
-        self.new_category = {
-            'type': 'Technology'
+        self.new_question = {
+            'question': 'Who won the 2008 Champions League Final?',
+            'answer': 'Manchester United',
+            'category': 6,
+            'difficulty': 2 
         }
     
     def tearDown(self):
@@ -74,10 +77,50 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['error'], 404)
         self.assertEqual(data['message'], 'resource not found')
 
-    '''TEST: When you click the trash icon next to a question, the question will be removed.
-    This removal will persist in the database and when you refresh the page. '''
+    '''TEST: DELETE '''
+    def test_delete_question(self):
+        res = self.client().delete('/questions/17')
+        data = json.loads(res.data)
+
+        question = Question.query.filter(Question.id == 1).one_or_none()
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['deleted'], 17)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+        self.assertEqual(question, None)
+
     
+    def test_422_question_does_not_exist(self):
+        res = self.client().delete('questions/1000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['error'], 422)
+        self.assertEqual(data['message'], 'unprocessable')
     
+    '''TEST: When you submit a question on the "Add" tab, 
+  the form will clear and the question will appear at the end of the last page
+  of the questions list in the "List" tab. ''' 
+  
+    def test_create_question(self):
+        res = self.client().post('/questions', json=self.new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['created'])
+        self.assertTrue(len(data['questions']))
+
+    def test_405_if_question_creation_not_allowed(self):
+        res = self.client().post('/questions/100', json=self.new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['error'], 405)
+        self.assertEqual(data['message'], 'method not allowed')
 
 
 # Make the tests conveniently executable
