@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import sys
 
 from models import setup_db, Question, Category, db
 
@@ -128,7 +129,36 @@ def create_app(test_config=None):
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
+  write app.route with questions/search and a function to say search for question
+ make a req variable= request_getjson and then make a search variable and do req.get(search variable, '')
+  query the question database with ilike and f string with search inside
+  paginate the data with above query and results 
+  try except for search and return jsonfy object of all results match the search 
+  '''
+  @app.route('/questions/search', methods=['POST'])
+  def search_questions():
+    req = request.get_json()
+    search_term = req.get('search', '')
+    
+    try:
+      results = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+      
+      if not results:
+        abort(422)
+      
+      searched_questions = paginate_questions(request, results)
+      
+      return jsonify({
+        'success': True,
+        'questions': searched_questions,
+        'total_questions': len(results)
+      })
+    
+    except:
+      print(sys.exc_info())
+      abort(422)
 
+  '''
   TEST: Search by any phrase. The questions list will update to include 
   only question that include that string within their question. 
   Try using the word "title" to start. 
