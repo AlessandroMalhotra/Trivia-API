@@ -147,16 +147,20 @@ def create_app(test_config=None):
       print(sys.exc_info())
       abort(422)
 
-  '''
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
 
   '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
-
+  
+  create a app.route with questions/category_id as route with methods post
+  then define a function called question by category
+  Inside the function do req = request.getjson() then a questions_id = req.get('category', '')
+  Inside try : Then we query the question database with the above varibale and get all questions with that category id,
+  then paginate and return a jsonify object end try
+  Inside except: throw error 404 or 422
+  
+  (Then query the category database to get the category which match that id) maybe
+   
   TEST: In the "List" tab / main screen, clicking on one of the 
   categories in the left column will cause only questions of that 
   category to be shown. 
