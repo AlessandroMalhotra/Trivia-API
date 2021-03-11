@@ -124,21 +124,10 @@ def create_app(test_config=None):
       db.session.close()
   
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
-  write app.route with questions/search and a function to say search for question
- make a req variable= request_getjson and then make a search variable and do req.get(search variable, '')
-  query the question database with ilike and f string with search inside
-  paginate the data with above query and results 
-  try except for search and return jsonfy object of all results match the search 
-  '''
   @app.route('/questions/search', methods=['POST'])
   def search_questions():
     req = request.get_json()
-    search_term = req.get('search', '')
+    search_term = req.get('searchTerm', '')
     
     try:
       results = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
