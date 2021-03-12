@@ -34,15 +34,15 @@ def create_app(test_config=None):
     return response
 
   
-  @app.route('/categories')
+  @app.route('/categories', methods=['GET'])
   def show_all_categories():
     cat = Category.query.all()
     categories = {}
     for category in cat:
       categories[category.id] = category.type
 
-    if len(cat) == 0:
-      abort(400)
+    if cat is None:
+      abort(404)
     
     return jsonify({
       'success': True,
@@ -53,14 +53,14 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['GET'])
   def show_questions():
     results = Question.query.order_by(Question.id).all()
+    
+    if len(results) == 0:
+      abort(404)
+    
     questions = paginate_questions(request, results)
     
     get_categories = Category.query.all()
     categories = [category.format() for category in get_categories]
-
-   
-    if len(questions) == 0:
-      abort(404)
    
     return jsonify({
       'success': True,
@@ -98,10 +98,10 @@ def create_app(test_config=None):
   def create_question():
     req = request.get_json()
 
-    question = req.get('question', None)
-    answer = req.get('answer', None)
-    difficulty = req.get('difficulty', None)
-    category = req.get('category', None)
+    question = req.get('question')
+    answer = req.get('answer')
+    difficulty = req.get('difficulty')
+    category = req.get('category')
 
     try:
       new_question = Question(question=question, answer=answer, category=category, difficulty=difficulty)
@@ -144,27 +144,30 @@ def create_app(test_config=None):
       })
     
     except:
-      print(sys.exc_info())
       abort(422)
 
 
   '''
-  @TODO: 
-  Create a GET endpoint to get questions based on category. 
-  
-  create a app.route with questions/category_id as route with methods post
-  then define a function called question by category
-  Inside the function do req = request.getjson() then a questions_id = req.get('category', '')
-  Inside try : Then we query the question database with the above varibale and get all questions with that category id,
-  then paginate and return a jsonify object end try
-  Inside except: throw error 404 or 422
-  
-  (Then query the category database to get the category which match that id) maybe
-   
-  TEST: In the "List" tab / main screen, clicking on one of the 
+   TEST: In the "List" tab / main screen, clicking on one of the 
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+  @app.route('/categories/<int:id>/questions', methods=['GET'])
+  def questions_based_on_category(id):
+      category_id = int(id) + 1
+      results = Question.query.filter(Question.category == category_id).all()
+
+      if not results:
+        abort(404)
+      
+      else:
+        questions_by_category = paginate_questions(request, results)
+        return jsonify({
+          'success': True,
+          'questions': questions_by_category,
+          'total_questions': len(results),
+          'current_category': category_id
+          })
 
 
   '''
@@ -209,5 +212,3 @@ def create_app(test_config=None):
     }), 405
   
   return app
-
-    
