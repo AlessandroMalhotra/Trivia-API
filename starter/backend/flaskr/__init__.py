@@ -140,7 +140,7 @@ def create_app(test_config=None):
       return jsonify({
         'success': True,
         'questions': searched_questions,
-        'total_questions': len(results.all())
+        'total_questions': len(results)
       })
     
     except:
