@@ -54,13 +54,13 @@ def create_app(test_config=None):
   def show_questions():
     results = Question.query.order_by(Question.id).all()
     
-    if len(results) == 0:
-      abort(404)
-    
     questions = paginate_questions(request, results)
     
     get_categories = Category.query.all()
     categories = [category.format() for category in get_categories]
+
+    if len(questions) == 0:
+      abort(404)
    
     return jsonify({
       'success': True,
@@ -147,11 +147,6 @@ def create_app(test_config=None):
       abort(422)
 
 
-  '''
-   TEST: In the "List" tab / main screen, clicking on one of the 
-  categories in the left column will cause only questions of that 
-  category to be shown. 
-  '''
   @app.route('/categories/<int:id>/questions', methods=['GET'])
   def questions_based_on_category(id):
       category_id = int(id) + 1
@@ -176,6 +171,16 @@ def create_app(test_config=None):
   This endpoint should take category and previous question parameters 
   and return a random questions within the given category, 
   if provided, and that is not one of the previous questions. 
+
+  @app.route for questions/quiz for a post method, then define a function called quiz
+  inside req = request.get_json() then category and one for previous question with[] as alternative if no previous question provided, assing to
+  variable = req.get()
+  Inside Try - query the question database so that we got all the questions in the database, then we want to do a if,
+  to say if category then get all question sin that category if they select all then just get all questions. 
+  We want random for both and (maybe paginated). 
+  Then we want to for each question answered pass them to a list of previous questions and make sure random question
+  is not in previous question list, if so we can return jsonify of questions 
+
 
   TEST: In the "Play" tab, after a user selects "All" or a category,
   one question at a time is displayed, the user is allowed to answer

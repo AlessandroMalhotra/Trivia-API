@@ -50,13 +50,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
         self.assertTrue(len(data['categories']))
     
-   # def test_404_sent_requesting_nothing_to_retrieve(self):
-       # res = self.client().get('/categories', json={'categories': None})
-        #data = json.loads(res.data)
+   #def test_404_sent_requesting_nothing_to_retrieve(self):
+       #res = self.client().get('/categories', json={'categories': None})
+       #data = json.loads(res.data)
 
-        #self.assertEqual(res.status_code, 404)
-        #self.assertEqual(data['success'], False)
-        #self.assertEqual(data['message'], 'Not Found')
+       #self.assertEqual(res.status_code, 404)
+       #self.assertEqual(data['success'], False)
+       #self.assertEqual(data['message'], 'Not Found')
     
 
     def test_retrieve_paginated_questions(self):
@@ -70,7 +70,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
     
     def test_404_sent_request_beyond_valid_page(self):
-        res = self.client().get('/questions?page=1000', json={'difficulty': 1})
+        res = self.client().get('/questions?page=1000', json={'difficulty': 3})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
