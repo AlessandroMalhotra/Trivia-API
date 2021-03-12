@@ -129,18 +129,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertTrue(len(data['questions']), 1)
 
-
-    def test_422_if_search_return_none(self):
-        res = self.client().post('/questions/search', json={'searchTerm': 'Ronaldo'})
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 422)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['error'], 422)
-        self.assertEqual(data['message'], 'unprocessable')
-        self.assertTrue(data['total_questions'], 0)
-        self.assertTrue(len(data['questions'], 0))
-
     
     def test_get_question_by_category(self):
         res = self.client().get('/categories/3/questions')
@@ -152,6 +140,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['questions']))
         self.assertTrue(data['total_questions'])
+    
     
     def test_404_question_category_does_not_exist(self):
         res = self.client().get('/categories/100/questions')
