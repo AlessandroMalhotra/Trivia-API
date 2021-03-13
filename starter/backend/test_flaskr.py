@@ -147,6 +147,24 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['error'], 404)
         self.assertEqual(data['message'], 'resource not found')
+    
+    def test_post_quizz(self):
+        res = self.client().post('/quizzes', json={'previous_questions': [], 'quiz_category': {'type': "click", 'id': 0}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question'])
+
+    
+    def test_404_post_quizz_fail(self):
+        res = self.client().post('/quizzes', json={'previous_questions': [], 'quiz_category': {'type': "click", 'id': 1000}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['error'])
+        self.assertTrue(data['message'])
 
 
 # Make the tests conveniently executable
