@@ -29,7 +29,7 @@ def create_app(test_config=None):
 
   @app.after_request
   def after_request(response):
-    response.headers.add('Access-control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-control-Allow-Headers', 'Content-Type, Authorization,true')
     response.headers.add('Access-control-Allow-Methods', 'GET, PUT, POST, PATCH, DELETE, OPTIONS')
     return response
 
@@ -180,12 +180,37 @@ def create_app(test_config=None):
   We want random for both and (maybe paginated). 
   Then we want to for each question answered pass them to a list of previous questions and make sure random question
   is not in previous question list, if so we can return jsonify of questions 
-
-
   TEST: In the "Play" tab, after a user selects "All" or a category,
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quizzes', methods=['POST'])
+  def create_quiz():
+    req = request.get_json()
+    previous_questions = req.get('previous_questions', [])
+    category = req.get('category', 0)
+
+    try:
+      if category['id'] == 0:
+        questions = Question.query.filter(Question.id.notin_(previous_questions)).all()
+      else:
+        questions = Question.query.filter(Question.category==category['id']).filter(Question.id.notin_(previous_questions)).all()
+      
+      if len(questions) == 0:
+        abort(400)
+        return jsonify({
+          'success': True,
+          'question': None
+        })
+      formatted_questions = random.choice(questions).format()
+  
+    except:
+      abort(400)
+    
+    return jsonify({
+      'success': True,
+      'question': formatted_questions
+    })
 
   '''
   @TODO: 
@@ -215,5 +240,13 @@ def create_app(test_config=None):
       'error': 405,
       'message': 'method not allowed'
     }), 405
+
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      "success": False, 
+      "error": 400,
+      "message": "bad request"
+    }), 400
   
   return app
