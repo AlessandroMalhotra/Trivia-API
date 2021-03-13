@@ -1,12 +1,15 @@
 ## Trivia API Documentation
 
+
 ### Introduction
 The API is used to configure and play the udacity trivia game.
+
 
 ### Getting Started
 Base URL: At present this app can only be run locally and is not hosted as a base URL. The backend app is hosted at the default, http://127.0.0.1:5000/, which is set as a proxy in the frontend configuration.
 API Keys /Authentication: The Trivia API doesn't use HTTP Header Authentication.
 Version: The current version of the API is v0.1 ;)
+
 
 ### Errors
 Errors are returned as JSON objects in the following format:
@@ -26,6 +29,7 @@ Response codes & types:
 
 ### Resource endpoint library
 
+
 #### GET /categories
 
 Descr.: Returns a list of all available quiz categories.
@@ -33,6 +37,7 @@ Sample CURL: curl -X GET http://localhost:3000/categories
 
 Arguments: None
 Response Object: ''' { "categories": { "1": "Science", "2": "Art", "3": "Geography", "4": "History", "5": "Entertainment", "6": "Sports" }, "success": true } '''
+
 
 #### GET /questions
 
@@ -55,6 +60,7 @@ Arguments: ''' Existing available Categories are: id | type
 
 Response Object: ''' { "currentCategory": "Science", "questions": [ { "answer": "The Liver", "category": 1, "difficulty": 4, "id": 20, "question": "What is the heaviest organ in the human body?" }, { "answer": "Alexander Fleming", "category": 1, "difficulty": 3, "id": 21, "question": "Who discovered penicillin?" }, { "answer": "Blood", "category": 1, "difficulty": 4, "id": 22, "question": "Hematology is a branch of medicine involving the study of what?" } ], "success": true, "totalQuestions": 22 } '''
 
+
 #### DELETE /questions/int:question_id
 
 Descr.: Deletes a selected question by ID
@@ -64,6 +70,7 @@ Arguments: int:question_id
 Response Object: ''' { "success": true } '''
 // QUESTION: WHY doesn't that CURL not work?
 
+
 #### POST /questions
 
 Descr.: Adds a question to the quiz
@@ -72,6 +79,7 @@ Sample CURL: curl -X POST http://localhost:3000/questions -H "Content-Type: appl
 Arguments: ''' {"question":"Where", "answer":"here", "category":"5","difficulty":"2"} '''
 Response Object: ''' { "success": true } '''
 
+
 #### POST /questions/search
 
 Descr.: Searches for questions. When you submit a question on the "Add" tab, the form will clear and the question will appear at the end of the last page of the questions list in the "List" tab.
@@ -79,6 +87,7 @@ Sample CURL: curl -X POST http://localhost:3000/search_questions -H "Content-Typ
 
 Arguments: ''' {searchTerm: "Boxer"} '''
 Response Object: ''' { "success": true } '''
+
 
 #### POST /quizzes
 
