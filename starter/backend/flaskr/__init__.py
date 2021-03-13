@@ -172,14 +172,7 @@ def create_app(test_config=None):
   and return a random questions within the given category, 
   if provided, and that is not one of the previous questions. 
 
-  @app.route for questions/quiz for a post method, then define a function called quiz
-  inside req = request.get_json() then category and one for previous question with[] as alternative if no previous question provided, assing to
-  variable = req.get()
-  Inside Try - query the question database so that we got all the questions in the database, then we want to do a if,
-  to say if category then get all question sin that category if they select all then just get all questions. 
-  We want random for both and (maybe paginated). 
-  Then we want to for each question answered pass them to a list of previous questions and make sure random question
-  is not in previous question list, if so we can return jsonify of questions 
+  
   TEST: In the "Play" tab, after a user selects "All" or a category,
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
